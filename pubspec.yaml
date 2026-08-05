@@ -1,0 +1,69 @@
+name: red_paper_umbrella
+description: "红纸伞 - 纸嫁衣风格2D恐怖解谜游戏"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  provider: ^6.1.1
+  shared_preferences: ^2.2.2
+  audioplayers: ^5.2.1
+  sensors_plus: ^3.0.0
+  vibration: ^1.8.4
+  path_provider: ^2.1.1
+  video_player: ^2.8.1
+  gif: ^2.3.0
+  flutter_local_notifications: ^16.3.0
+  camera: ^0.10.5+5
+  image_picker: ^1.0.4
+  google_mobile_ads: ^4.0.0
+  wakelock_plus: ^1.1.4
+  screen_brightness: ^1.0.1
+  torch_light: ^1.0.1
+  flutter_shaders: ^0.1.2
+  flare_flutter: ^3.0.2
+  rive: ^0.12.4
+  tflite_flutter: ^0.10.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  flutter_native_splash: ^2.3.7
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/characters/
+    - assets/images/items/
+    - assets/images/backgrounds/
+    - assets/images/ui/
+    - assets/images/jumpscares/
+    - assets/images/cg/
+    - assets/images/videos/
+    - assets/images/gifs/
+    - assets/audio/bgm/
+    - assets/audio/sfx/
+    - assets/audio/jumpscares/
+    - assets/audio/voice/
+  fonts:
+    - family: HorrorFont
+      fonts:
+        - asset: assets/fonts/horror_font.ttf
+          weight: 400
+    - family: ChineseBrush
+      fonts:
+        - asset: assets/fonts/chinese_brush.ttf
+          weight: 400
+
+flutter_native_splash:
+  color: "#000000"
+  image: assets/images/ui/splash.png
+  android: true
+  ios: true
