@@ -15,7 +15,6 @@ class _DisclaimerDialogState extends State<DisclaimerDialog> {
   final ScrollController _scrollController = ScrollController();
   bool _hasScrolledToBottom = false;
   bool _agreed = false;
-  final AudioService _audioService = AudioService();
 
   @override
   void initState() {
@@ -40,14 +39,16 @@ class _DisclaimerDialogState extends State<DisclaimerDialog> {
   }
 
   void _accept() {
-    _audioService.playSfx('paper_flip');
+    final audioService = Provider.of<AudioService>(context, listen: false);
+    audioService.playSfx('paper_flip');
     final player = Provider.of<Player>(context, listen: false);
     player.acceptDisclaimer();
     Navigator.of(context).pop();
   }
 
   void _refuse() {
-    _audioService.playSfx('door_close');
+    final audioService = Provider.of<AudioService>(context, listen: false);
+    audioService.playSfx('door_close');
     Navigator.of(context).pop();
     Navigator.of(context).pop();
   }

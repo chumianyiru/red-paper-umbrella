@@ -12,7 +12,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final AudioService _audioService = AudioService();
   double _bgmVolume = 0.7;
   double _sfxVolume = 0.8;
   double _voiceVolume = 0.9;
@@ -23,9 +22,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _bgmVolume = _audioService.bgmVolume;
-    _sfxVolume = _audioService.sfxVolume;
-    _voiceVolume = _audioService.voiceVolume;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final audioService = Provider.of<AudioService>(context, listen: false);
+      setState(() {
+        _bgmVolume = audioService.bgmVolume;
+        _sfxVolume = audioService.sfxVolume;
+        _voiceVolume = audioService.voiceVolume;
+      });
+    });
   }
 
   @override
@@ -66,9 +70,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: '背景音乐',
             value: _bgmVolume,
             onChanged: (value) {
+              final audioService = Provider.of<AudioService>(context, listen: false);
               setState(() {
                 _bgmVolume = value;
-                _audioService.setBgmVolume(value);
+                audioService.setBgmVolume(value);
               });
             },
           ),
@@ -78,9 +83,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: '音效',
             value: _sfxVolume,
             onChanged: (value) {
+              final audioService = Provider.of<AudioService>(context, listen: false);
               setState(() {
                 _sfxVolume = value;
-                _audioService.setSfxVolume(value);
+                audioService.setSfxVolume(value);
               });
             },
           ),
@@ -90,9 +96,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: '语音',
             value: _voiceVolume,
             onChanged: (value) {
+              final audioService = Provider.of<AudioService>(context, listen: false);
               setState(() {
                 _voiceVolume = value;
-                _audioService.setVoiceVolume(value);
+                audioService.setVoiceVolume(value);
               });
             },
           ),

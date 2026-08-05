@@ -20,29 +20,25 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Generate missing platform files
+      - name: Create fresh Flutter project and copy our code
         run: |
-          # Create a temp project to get gradle wrapper and essential files
+          # Create a temp project with correct platform files
           cd /tmp
-          flutter create --platforms=android temp_project --org com.horror --project-name red_paper_umbrella
-          # Copy gradle wrapper and scripts (only if missing)
-          cd $GITHUB_WORKSPACE/android
-          if [ ! -d gradle ]; then
-            cp -r /tmp/temp_project/android/gradle .
+          flutter create --platforms=android --org com.horror --project-name red_paper_umbrella temp_project
+          # Remove default lib and pubspec
+          rm -rf temp_project/lib
+          rm temp_project/pubspec.yaml
+          # Copy our code
+          cd $GITHUB_WORKSPACE
+          cp -r lib /tmp/temp_project/
+          cp pubspec.yaml /tmp/temp_project/
+          # Copy assets if they exist
+          if [ -d assets ]; then
+            cp -r assets /tmp/temp_project/
           fi
-          if [ ! -f gradlew ]; then
-            cp /tmp/temp_project/android/gradlew .
-          fi
-          if [ ! -f gradlew.bat ]; then
-            cp /tmp/temp_project/android/gradlew.bat .
-          fi
-          chmod +x gradlew
-          # Ensure gradle.properties exists
-          if [ ! -f gradle.properties ]; then
-            cp /tmp/temp_project/android/gradle.properties .
-          fi
-          # Always use standard settings.gradle to avoid assert errors
-          cp /tmp/temp_project/android/settings.gradle .
+          # Replace the entire project with our code + fresh platform files
+          cd /tmp/temp_project
+          cp -r * $GITHUB_WORKSPACE/
 
       - name: Install dependencies
         run: flutter pub get
@@ -70,54 +66,31 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Generate iOS platform files
+      - name: Create fresh Flutter project and copy our code
         run: |
-          # Create a temp project to get iOS configuration files
+          # Create a temp project with correct platform files
           cd /tmp
-          flutter create --platforms=ios temp_project --org com.horror --project-name red_paper_umbrella
+          flutter create --platforms=ios --org com.horror --project-name red_paper_umbrella temp_project
+          # Remove default lib and pubspec
+          rm -rf temp_project/lib
+          rm temp_project/pubspec.yaml
+          # Copy our code
           cd $GITHUB_WORKSPACE
-          # Copy essential iOS project files
-          if [ ! -d ios/Runner.xcodeproj ]; then
-            cp -r /tmp/temp_project/ios/Runner.xcodeproj ios/
+          cp -r lib /tmp/temp_project/
+          cp pubspec.yaml /tmp/temp_project/
+          # Copy assets if they exist
+          if [ -d assets ]; then
+            cp -r assets /tmp/temp_project/
           fi
-          if [ ! -f ios/Podfile ]; then
-            cp /tmp/temp_project/ios/Podfile ios/
-          fi
-          # Ensure Runner directory exists with necessary files
-          if [ ! -d ios/Runner ]; then
-            mkdir -p ios/Runner
-          fi
-          # Copy base Runner files but preserve our Info.plist
-          if [ ! -f ios/Runner/AppDelegate.swift ]; then
-            cp /tmp/temp_project/ios/Runner/AppDelegate.swift ios/Runner/
-          fi
-          if [ ! -f ios/Runner/Info.plist ]; then
-            cp /tmp/temp_project/ios/Runner/Info.plist ios/Runner/
-          fi
-          if [ ! -d ios/Runner/Base.lproj ]; then
-            cp -r /tmp/temp_project/ios/Runner/Base.lproj ios/Runner/
-          fi
-          if [ ! -d ios/Runner/Assets.xcassets ]; then
-            cp -r /tmp/temp_project/ios/Runner/Assets.xcassets ios/Runner/
-          fi
-          # Copy other required iOS files
-          for f in /tmp/temp_project/ios/Runner/*.dart /tmp/temp_project/ios/Runner/*.h /tmp/temp_project/ios/Runner/*.m; do
-            if [ -f "$f" ]; then
-              filename=$(basename "$f")
-              if [ ! -f "ios/Runner/$filename" ]; then
-                cp "$f" ios/Runner/
-              fi
-            fi
-          done
+          # Replace the entire project with our code + fresh platform files
+          cd /tmp/temp_project
+          cp -r * $GITHUB_WORKSPACE/
 
       - name: Install dependencies
         run: flutter pub get
 
       - name: Build iOS (No code sign)
         run: |
-          cd ios
-          pod install --repo-update
-          cd ..
           flutter build ios --release --no-codesign --no-tree-shake-icons
           # Package as IPA
           cd build/ios/iphoneos

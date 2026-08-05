@@ -15,7 +15,6 @@ dependencies:
   shared_preferences: ^2.2.2
   audioplayers: ^5.2.1
   sensors_plus: ^3.0.0
-  vibration: ^1.8.4
 
 dev_dependencies:
   flutter_test:
@@ -26,16 +25,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
-    - assets/images/characters/
-    - assets/images/items/
-    - assets/images/backgrounds/
-    - assets/images/ui/
-    - assets/images/jumpscares/
-    - assets/images/cg/
-    - assets/images/videos/
-    - assets/images/gifs/
+    - assets/images/chapter1/
+    - assets/audio/
     - assets/audio/bgm/
     - assets/audio/sfx/
-    - assets/audio/jumpscares/
-    - assets/audio/jumpscare/
     - assets/audio/voice/

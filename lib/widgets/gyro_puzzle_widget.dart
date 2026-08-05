@@ -363,17 +363,6 @@ class _GyroPuzzleWidgetState extends State<GyroPuzzleWidget> with TickerProvider
   }) {
     return GestureDetector(
       onTap: onTap,
-      onLongPress: () {
-        Timer.periodic(const Duration(milliseconds: 100), (timer) {
-          onLongPress();
-          Future.delayed(const Duration(milliseconds: 500), () {
-            if (!timer.isActive) return;
-          });
-        });
-      },
-      onLongPressEnd: (_) {
-        // Cancel on release
-      },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
         decoration: BoxDecoration(

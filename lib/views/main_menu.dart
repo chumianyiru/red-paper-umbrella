@@ -21,7 +21,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> with TickerProviderStat
   late AnimationController _fogController;
   late Animation<double> _titleAnimation;
   late Animation<double> _fogAnimation;
-  final AudioService _audioService = AudioService();
   bool _showButtons = false;
 
   @override
@@ -50,7 +49,8 @@ class _MainMenuScreenState extends State<MainMenuScreen> with TickerProviderStat
         setState(() {
           _showButtons = true;
         });
-        _audioService.playBgm('assets/audio/bgm/main_menu.mp3');
+        final audioService = Provider.of<AudioService>(context, listen: false);
+        audioService.playBgm('audio/bgm/main_menu.mp3');
         _checkFirstRun();
       }
     });
@@ -79,7 +79,8 @@ class _MainMenuScreenState extends State<MainMenuScreen> with TickerProviderStat
   }
 
   void _startNewGame() {
-    _audioService.playSfx('door_open');
+    final audioService = Provider.of<AudioService>(context, listen: false);
+    audioService.playSfx('door_open');
     final player = Provider.of<Player>(context, listen: false);
     player.reset();
     player.setChapter(1);
@@ -95,7 +96,8 @@ class _MainMenuScreenState extends State<MainMenuScreen> with TickerProviderStat
   }
 
   void _continueGame() {
-    _audioService.playSfx('door_open');
+    final audioService = Provider.of<AudioService>(context, listen: false);
+    audioService.playSfx('door_open');
     final player = Provider.of<Player>(context, listen: false);
     Navigator.of(context).push(
       PageRouteBuilder(
@@ -109,14 +111,16 @@ class _MainMenuScreenState extends State<MainMenuScreen> with TickerProviderStat
   }
 
   void _openChapterSelect() {
-    _audioService.playSfx('paper_flip');
+    final audioService = Provider.of<AudioService>(context, listen: false);
+    audioService.playSfx('paper_flip');
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => const ChapterSelectScreen()),
     );
   }
 
   void _openSettings() {
-    _audioService.playSfx('paper_flip');
+    final audioService = Provider.of<AudioService>(context, listen: false);
+    audioService.playSfx('paper_flip');
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => const SettingsScreen()),
     );

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:vibration/vibration.dart';
+import 'package:flutter/services.dart';
 import '../utils/theme.dart';
 
 class JumpscareWidget extends StatefulWidget {
@@ -63,8 +63,10 @@ class _JumpscareWidgetState extends State<JumpscareWidget> with TickerProviderSt
       });
     }
 
-    if (await Vibration.hasVibrator() ?? false) {
-      Vibration.vibrate(duration: (500 * widget.intensity).round());
+    try {
+      HapticFeedback.heavyImpact();
+    } catch (e) {
+      // Ignore haptic feedback errors
     }
 
     _flashController.forward().then((_) {
@@ -160,7 +162,6 @@ class _JumpscareWidgetState extends State<JumpscareWidget> with TickerProviderSt
                           fontSize: 50 + widget.intensity * 30,
                           color: HorrorTheme.bloodRed,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'ChineseBrush',
                           shadows: [
                             Shadow(
                               color: HorrorTheme.bloodRed.withOpacity(0.8),
