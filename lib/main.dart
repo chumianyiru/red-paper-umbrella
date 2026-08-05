@@ -5,10 +5,10 @@ import 'models/player.dart';
 import 'services/audio_service.dart';
 import 'utils/theme.dart';
 import 'views/main_menu.dart';
-import 'views/disclaimer_screen.dart';
 import 'views/chapter_select_screen.dart';
 import 'views/game_screen.dart';
 import 'views/settings_screen.dart';
+import 'widgets/disclaimer_dialog.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,6 +50,7 @@ class RedPaperUmbrellaApp extends StatefulWidget {
 
 class _RedPaperUmbrellaAppState extends State<RedPaperUmbrellaApp> {
   bool _disclaimerAccepted = false;
+  bool _checkingDisclaimer = true;
 
   @override
   void initState() {
@@ -62,6 +63,28 @@ class _RedPaperUmbrellaAppState extends State<RedPaperUmbrellaApp> {
     await player.loadGame();
     setState(() {
       _disclaimerAccepted = player.disclaimerAccepted;
+      _checkingDisclaimer = false;
+    });
+    
+    if (!_disclaimerAccepted && mounted) {
+      _showDisclaimer();
+    }
+  }
+
+  void _showDisclaimer() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const DisclaimerDialog(),
+      ).then((_) {
+        final player = Provider.of<Player>(context, listen: false);
+        if (player.disclaimerAccepted) {
+          setState(() {
+            _disclaimerAccepted = true;
+          });
+        }
+      });
     });
   }
 
@@ -73,10 +96,18 @@ class _RedPaperUmbrellaAppState extends State<RedPaperUmbrellaApp> {
       theme: HorrorTheme.darkTheme,
       darkTheme: HorrorTheme.darkTheme,
       themeMode: ThemeMode.dark,
-      initialRoute: _disclaimerAccepted ? '/menu' : '/disclaimer',
+      home: _checkingDisclaimer
+          ? const Scaffold(
+              backgroundColor: Colors.black,
+              body: Center(
+                child: CircularProgressIndicator(
+                  color: Color(0xFF8B0000),
+                ),
+              ),
+            )
+          : const MainMenuScreen(),
       routes: {
-        '/disclaimer': (context) => const DisclaimerScreen(),
-        '/menu': (context) => const MainMenu(),
+        '/menu': (context) => const MainMenuScreen(),
         '/chapter_select': (context) => const ChapterSelectScreen(),
         '/settings': (context) => const SettingsScreen(),
       },

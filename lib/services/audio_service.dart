@@ -88,6 +88,12 @@ class AudioService with ChangeNotifier {
     'save': ['assets/audio/sfx/save.mp3'],
     'damage': ['assets/audio/sfx/damage.mp3'],
     'sanity_down': ['assets/audio/sfx/sanity_down.mp3'],
+    'examine': ['assets/audio/sfx/paper_flip.mp3'],
+    'jumpscare': ['assets/audio/sfx/thunder_01.mp3', 'assets/audio/sfx/mirror_break.mp3'],
+    'wind_howling': ['assets/audio/bgm/wind_howl.mp3'],
+    'water_drip': ['assets/audio/bgm/drip.mp3'],
+    'creaking_door': ['assets/audio/sfx/door_open_01.mp3'],
+    'wedding_music_box': ['assets/audio/bgm/ritual.mp3'],
   };
 
   double get bgmVolume => _bgmVolume;
@@ -165,6 +171,10 @@ class AudioService with ChangeNotifier {
 
   Future<void> stopVoice() async {
     await _voicePlayer.stop();
+  }
+
+  Future<void> stopSfx() async {
+    await _sfxPlayer.stop();
   }
 
   void setBgmVolume(double volume) {

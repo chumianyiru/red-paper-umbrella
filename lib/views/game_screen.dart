@@ -186,6 +186,15 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       case HotspotType.jumpscare:
         _triggerJumpscare(hotspot.jumpscareIntensity);
         break;
+      case HotspotType.npc:
+        _examineHotspot(hotspot);
+        break;
+      case HotspotType.gyro:
+        _handlePuzzleHotspot(hotspot);
+        break;
+      case HotspotType.raster:
+        _handlePuzzleHotspot(hotspot);
+        break;
     }
   }
 

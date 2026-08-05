@@ -4,7 +4,7 @@ import '../utils/theme.dart';
 import '../services/audio_service.dart';
 import 'game_screen.dart';
 import 'settings_screen.dart';
-import 'chapter_select.dart';
+import 'chapter_select_screen.dart';
 import '../widgets/disclaimer_dialog.dart';
 import '../models/player.dart';
 import 'package:provider/provider.dart';

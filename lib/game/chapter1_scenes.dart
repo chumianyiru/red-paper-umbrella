@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'models/scene.dart';
-import 'models/hotspot.dart';
+import '../models/scene.dart';
+import '../models/hotspot.dart';
 
 class Chapter1Scenes {
   static List<Scene> getScenes() {
@@ -70,7 +70,7 @@ class Chapter1Scenes {
           speaker: '???',
           text: '回来...回来...',
           emotion: 'whisper',
-        },
+        ),
       ],
     );
   }
@@ -132,7 +132,7 @@ class Chapter1Scenes {
           speaker: '井底',
           text: '滴答...滴答...咚...',
           emotion: 'sfx',
-        },
+        ),
       ],
     );
   }
@@ -213,7 +213,7 @@ class Chapter1Scenes {
           speaker: '梁上',
           text: '吱呀...',
           emotion: 'sfx',
-        },
+        ),
       ],
     );
   }
@@ -281,12 +281,12 @@ class Chapter1Scenes {
           speaker: '林小雨',
           text: '喜堂？为什么这里会有喜堂...而且牌位上写着阿明的名字...',
           emotion: 'terrified',
-        },
+        ),
         DialogueLine(
           speaker: 'Ghost',
           text: '拜堂了...我们该拜堂了...',
           emotion: 'ghostly',
-        },
+        ),
       ],
     );
   }
@@ -342,7 +342,7 @@ class Chapter1Scenes {
           speaker: '林小雨',
           text: '这口棺材...为什么是红色的？墙上的字...是谁写的？',
           emotion: 'horror',
-        },
+        ),
       ],
     );
   }
