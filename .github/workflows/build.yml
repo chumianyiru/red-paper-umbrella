@@ -130,8 +130,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: release/*
-          tag_name: v1.0.0
-          name: 红纸伞 v1.0.0
+          tag_name: v1.0.1
+          name: 红纸伞 v1.0.1
           body: |
             ## 红纸伞 - 纸嫁衣风格2D恐怖解谜游戏
             
