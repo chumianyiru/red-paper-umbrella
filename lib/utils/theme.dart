@@ -12,6 +12,8 @@ class HorrorTheme {
   static const Color eerieGreen = Color(0xFF004D40);
   static const Color moonlightBlue = Color(0xFF1A237E);
 
+  static ThemeData get darkTheme => darkHorrorTheme;
+
   static ThemeData get darkHorrorTheme {
     final ColorScheme colorScheme = ColorScheme.dark(
       primary: bloodRed,

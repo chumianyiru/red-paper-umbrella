@@ -22,20 +22,27 @@ jobs:
 
       - name: Generate missing platform files
         run: |
-          # Create a temp project to get gradle wrapper and other platform files
+          # Create a temp project to get gradle wrapper and essential files
           cd /tmp
           flutter create --platforms=android temp_project --org com.horror --project-name red_paper_umbrella
-          # Copy gradle wrapper and other essential files back
+          # Copy gradle wrapper and scripts (only if missing)
           cd $GITHUB_WORKSPACE/android
-          cp -r /tmp/temp_project/android/gradle .
-          cp /tmp/temp_project/android/gradlew .
-          cp /tmp/temp_project/android/gradlew.bat .
-          cp /tmp/temp_project/android/settings.gradle .
+          if [ ! -d gradle ]; then
+            cp -r /tmp/temp_project/android/gradle .
+          fi
+          if [ ! -f gradlew ]; then
+            cp /tmp/temp_project/android/gradlew .
+          fi
+          if [ ! -f gradlew.bat ]; then
+            cp /tmp/temp_project/android/gradlew.bat .
+          fi
           chmod +x gradlew
-          # Ensure gradle.properties exists with correct settings
+          # Ensure gradle.properties exists
           if [ ! -f gradle.properties ]; then
             cp /tmp/temp_project/android/gradle.properties .
           fi
+          # Always use standard settings.gradle to avoid assert errors
+          cp /tmp/temp_project/android/settings.gradle .
 
       - name: Install dependencies
         run: flutter pub get
@@ -50,7 +57,7 @@ jobs:
           path: build/app/outputs/flutter-apk/app-release.apk
 
   build-ios:
-    name: Build iOS IPA
+    name: Build iOS (macOS)
     runs-on: macos-latest
     steps:
       - name: Checkout code
@@ -63,25 +70,45 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Generate missing platform files
+      - name: Generate iOS platform files
         run: |
           # Create a temp project to get iOS configuration files
           cd /tmp
           flutter create --platforms=ios temp_project --org com.horror --project-name red_paper_umbrella
-          # Copy essential iOS files
           cd $GITHUB_WORKSPACE
-          if [ ! -d ios ]; then
-            mkdir -p ios
+          # Copy essential iOS project files
+          if [ ! -d ios/Runner.xcodeproj ]; then
+            cp -r /tmp/temp_project/ios/Runner.xcodeproj ios/
           fi
-          cp -r /tmp/temp_project/ios/Runner ios/
-          cp -r /tmp/temp_project/ios/Runner.xcodeproj ios/
-          cp /tmp/temp_project/ios/Podfile ios/
-          cp /tmp/temp_project/ios/Podfile.lock ios/ 2>/dev/null || true
-          # Preserve our Info.plist if it exists
-          if [ -f ios/Runner/Info.plist ]; then
-            cp ios/Runner/Info.plist ios/Runner/Info.plist.bak
-            cp /tmp/temp_project/ios/Runner/Info.plist ios/Runner/Info.plist.tmp
+          if [ ! -f ios/Podfile ]; then
+            cp /tmp/temp_project/ios/Podfile ios/
           fi
+          # Ensure Runner directory exists with necessary files
+          if [ ! -d ios/Runner ]; then
+            mkdir -p ios/Runner
+          fi
+          # Copy base Runner files but preserve our Info.plist
+          if [ ! -f ios/Runner/AppDelegate.swift ]; then
+            cp /tmp/temp_project/ios/Runner/AppDelegate.swift ios/Runner/
+          fi
+          if [ ! -f ios/Runner/Info.plist ]; then
+            cp /tmp/temp_project/ios/Runner/Info.plist ios/Runner/
+          fi
+          if [ ! -d ios/Runner/Base.lproj ]; then
+            cp -r /tmp/temp_project/ios/Runner/Base.lproj ios/Runner/
+          fi
+          if [ ! -d ios/Runner/Assets.xcassets ]; then
+            cp -r /tmp/temp_project/ios/Runner/Assets.xcassets ios/Runner/
+          fi
+          # Copy other required iOS files
+          for f in /tmp/temp_project/ios/Runner/*.dart /tmp/temp_project/ios/Runner/*.h /tmp/temp_project/ios/Runner/*.m; do
+            if [ -f "$f" ]; then
+              filename=$(basename "$f")
+              if [ ! -f "ios/Runner/$filename" ]; then
+                cp "$f" ios/Runner/
+              fi
+            fi
+          done
 
       - name: Install dependencies
         run: flutter pub get
@@ -92,6 +119,7 @@ jobs:
           pod install --repo-update
           cd ..
           flutter build ios --release --no-codesign --no-tree-shake-icons
+          # Package as IPA
           cd build/ios/iphoneos
           mkdir -p Payload
           if [ -d Runner.app ]; then
@@ -135,7 +163,7 @@ jobs:
             ## 红纸伞 - 纸嫁衣风格2D恐怖解谜游戏
             
             ### 下载
-            - **Android**: 下载 APK 文件安装（已签名，可直接安装）
+            - **Android**: 下载 APK 文件安装（使用debug签名，可直接安装）
             - **iOS**: IPA 需要通过 AltStore/Sideloadly 等工具自签名安装
             
             ### 游戏特色

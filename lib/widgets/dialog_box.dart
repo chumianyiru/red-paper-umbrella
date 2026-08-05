@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../utils/theme.dart';
-import '../models/scene.dart';
+import '../models/hotspot.dart';
 import '../services/audio_service.dart';
 
 class DialogBox extends StatefulWidget {
-  final List<DialogLine> dialogs;
+  final List<DialogueLine> dialogs;
   final VoidCallback onComplete;
   final String? speakerImage;
 
@@ -189,7 +189,7 @@ class _DialogBoxState extends State<DialogBox> {
     );
   }
 
-  Widget _buildSpeakerBar(DialogLine dialog) {
+  Widget _buildSpeakerBar(DialogueLine dialog) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(

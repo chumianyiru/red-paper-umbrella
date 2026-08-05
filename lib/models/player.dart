@@ -68,7 +68,7 @@ class Player with ChangeNotifier {
   }
 
   void takeDamage(int amount) {
-    _health = (_health - amount).clamp(0, _maxHealth);
+    _health = (_health - amount).clamp(0, _maxHealth).toInt();
     if (_health <= 0) {
       _onPlayerDeath();
     }
@@ -76,17 +76,17 @@ class Player with ChangeNotifier {
   }
 
   void heal(int amount) {
-    _health = (_health + amount).clamp(0, _maxHealth);
+    _health = (_health + amount).clamp(0, _maxHealth).toInt();
     notifyListeners();
   }
 
   void decreaseSanity(int amount) {
-    _sanity = (_sanity - amount).clamp(0, _maxSanity);
+    _sanity = (_sanity - amount).clamp(0, _maxSanity).toInt();
     notifyListeners();
   }
 
   void restoreSanity(int amount) {
-    _sanity = (_sanity + amount).clamp(0, _maxSanity);
+    _sanity = (_sanity + amount).clamp(0, _maxSanity).toInt();
     notifyListeners();
   }
 
@@ -195,7 +195,7 @@ class Player with ChangeNotifier {
 
   void _onPlayerDeath() {
     _health = _maxHealth;
-    _sanity = (_sanity - 20).clamp(0, _maxSanity);
+    _sanity = (_sanity - 20).clamp(0, _maxSanity).toInt();
   }
 
   void reset() {

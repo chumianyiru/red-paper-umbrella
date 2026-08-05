@@ -3,25 +3,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
 import '../utils/theme.dart';
-import '../services/audio_service.dart';
-import '../models/character.dart';
 
 class JumpscareWidget extends StatefulWidget {
-  final String jumpscareId;
-  final List<String> images;
-  final List<String> sounds;
-  final int sanityDamage;
-  final int healthDamage;
-  final VoidCallback onComplete;
+  final double intensity;
 
   const JumpscareWidget({
     super.key,
-    required this.jumpscareId,
-    required this.images,
-    required this.sounds,
-    this.sanityDamage = 0,
-    this.healthDamage = 0,
-    required this.onComplete,
+    this.intensity = 0.5,
   });
 
   @override
@@ -32,13 +20,16 @@ class _JumpscareWidgetState extends State<JumpscareWidget> with TickerProviderSt
   late AnimationController _flashController;
   late AnimationController _shakeController;
   late AnimationController _scaleController;
-  final AudioService _audioService = AudioService();
   final Random _random = Random();
   Timer? _timer;
   bool _showImage = false;
   bool _flashOn = false;
-  String? _currentImage;
   int _shakeCount = 0;
+  int _currentImageIndex = 0;
+
+  final List<String> _ghostFaces = [
+    '👻', '😱', '💀', '👹', '😈',
+  ];
 
   @override
   void initState() {
@@ -61,11 +52,9 @@ class _JumpscareWidgetState extends State<JumpscareWidget> with TickerProviderSt
   }
 
   void _triggerJumpscare() async {
-    _currentImage = widget.images.isNotEmpty 
-        ? widget.images[_random.nextInt(widget.images.length)]
-        : null;
+    _currentImageIndex = _random.nextInt(_ghostFaces.length);
 
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future.delayed(const Duration(milliseconds: 100));
     
     if (mounted) {
       setState(() {
@@ -74,10 +63,8 @@ class _JumpscareWidgetState extends State<JumpscareWidget> with TickerProviderSt
       });
     }
 
-    _audioService.playJumpscare(widget.sounds);
-
     if (await Vibration.hasVibrator() ?? false) {
-      Vibration.vibrate(duration: 500);
+      Vibration.vibrate(duration: (500 * widget.intensity).round());
     }
 
     _flashController.forward().then((_) {
@@ -88,13 +75,11 @@ class _JumpscareWidgetState extends State<JumpscareWidget> with TickerProviderSt
 
     _startShaking();
 
-    _timer = Timer(const Duration(milliseconds: 1200), () {
+    final duration = (800 + 400 * widget.intensity).round();
+    _timer = Timer(Duration(milliseconds: duration), () {
       if (mounted) {
         setState(() {
           _showImage = false;
-        });
-        Future.delayed(const Duration(milliseconds: 300), () {
-          widget.onComplete();
         });
       }
     });
@@ -126,8 +111,8 @@ class _JumpscareWidgetState extends State<JumpscareWidget> with TickerProviderSt
   Widget build(BuildContext context) {
     if (!_showImage) return const SizedBox.shrink();
 
-    final dx = _random.nextDouble() * 20 - 10;
-    final dy = _random.nextDouble() * 20 - 10;
+    final dx = _random.nextDouble() * 20 * widget.intensity - 10 * widget.intensity;
+    final dy = _random.nextDouble() * 20 * widget.intensity - 10 * widget.intensity;
 
     return Material(
       color: Colors.transparent,
@@ -138,7 +123,7 @@ class _JumpscareWidgetState extends State<JumpscareWidget> with TickerProviderSt
               animation: _flashController,
               builder: (context, child) {
                 return Container(
-                  color: Colors.white.withOpacity(1 - _flashController.value),
+                  color: Colors.white.withOpacity((1 - _flashController.value) * 0.8),
                 );
               },
             ),
@@ -147,7 +132,7 @@ class _JumpscareWidgetState extends State<JumpscareWidget> with TickerProviderSt
               animation: _scaleController,
               builder: (context, child) {
                 return Transform.scale(
-                  scale: 0.5 + _scaleController.value * 0.8,
+                  scale: 0.3 + _scaleController.value * (0.5 + widget.intensity * 0.5),
                   child: Transform.translate(
                     offset: Offset(dx * (_shakeCount % 2 == 0 ? 1 : -1), dy),
                     child: child,
@@ -157,134 +142,52 @@ class _JumpscareWidgetState extends State<JumpscareWidget> with TickerProviderSt
               child: Container(
                 width: double.infinity,
                 height: double.infinity,
-                color: Colors.black,
-                child: _currentImage != null
-                    ? Image.asset(
-                        _currentImage!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return _buildFallbackJumpscare();
-                        },
-                      )
-                    : _buildFallbackJumpscare(),
-              ),
-            ),
-          ),
-          Center(
-            child: AnimatedBuilder(
-              animation: _flashController,
-              builder: (context, child) {
-                return Container(
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: HorrorTheme.bloodRed.withOpacity(_flashController.value),
-                        blurRadius: 100,
-                        spreadRadius: 50,
+                color: Colors.black.withOpacity(0.9),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _ghostFaces[_currentImageIndex],
+                        style: TextStyle(
+                          fontSize: 200 + widget.intensity * 100,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        '啊！！！',
+                        style: TextStyle(
+                          fontSize: 50 + widget.intensity * 30,
+                          color: HorrorTheme.bloodRed,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'ChineseBrush',
+                          shadows: [
+                            Shadow(
+                              color: HorrorTheme.bloodRed.withOpacity(0.8),
+                              blurRadius: 30,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                );
-              },
+                ),
+              ),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: HorrorTheme.bloodRed.withOpacity(widget.intensity * 0.5),
+                  blurRadius: 100,
+                  spreadRadius: 50,
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
   }
-
-  Widget _buildFallbackJumpscare() {
-    return Container(
-      color: Colors.black,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.sentiment_very_dissatisfied,
-              size: 200,
-              color: HorrorTheme.bloodRed,
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              '啊！！！',
-              style: TextStyle(
-                fontSize: 60,
-                color: HorrorTheme.bloodRed,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'ChineseBrush',
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class JumpscareManager {
-  static final Map<String, JumpscareData> _jumpscares = {};
-
-  static void initialize() {
-    _jumpscares['shadow_glimpse'] = JumpscareData(
-      id: 'shadow_glimpse',
-      images: [
-        'assets/images/jumpscares/shadow_01.png',
-        'assets/images/jumpscares/shadow_02.png',
-      ],
-      sounds: [
-        'assets/audio/jumpscares/shadow_whoosh.mp3',
-      ],
-      sanityDamage: 10,
-    );
-
-    _jumpscares['child_laugh'] = JumpscareData(
-      id: 'child_laugh',
-      images: CharacterManager.getCharacter('child_ghost')?.jumpscareImages ?? [],
-      sounds: CharacterManager.getCharacter('child_ghost')?.jumpscareSounds ?? [],
-      sanityDamage: 15,
-    );
-
-    _jumpscares['water_ghost'] = JumpscareData(
-      id: 'water_ghost',
-      images: CharacterManager.getCharacter('water_ghost')?.jumpscareImages ?? [],
-      sounds: CharacterManager.getCharacter('water_ghost')?.jumpscareSounds ?? [],
-      sanityDamage: 20,
-      healthDamage: 15,
-    );
-
-    _jumpscares['bride_appear'] = JumpscareData(
-      id: 'bride_appear',
-      images: CharacterManager.getCharacter('ghost_bride')?.jumpscareImages ?? [],
-      sounds: CharacterManager.getCharacter('ghost_bride')?.jumpscareSounds ?? [],
-      sanityDamage: 25,
-      healthDamage: 20,
-    );
-
-    _jumpscares['paper_doll'] = JumpscareData(
-      id: 'paper_doll',
-      images: CharacterManager.getCharacter('paper_doll')?.jumpscareImages ?? [],
-      sounds: CharacterManager.getCharacter('paper_doll')?.jumpscareSounds ?? [],
-      sanityDamage: 15,
-      healthDamage: 10,
-    );
-  }
-
-  static JumpscareData? getJumpscare(String id) => _jumpscares[id];
-}
-
-class JumpscareData {
-  final String id;
-  final List<String> images;
-  final List<String> sounds;
-  final int sanityDamage;
-  final int healthDamage;
-
-  const JumpscareData({
-    required this.id,
-    required this.images,
-    required this.sounds,
-    this.sanityDamage = 0,
-    this.healthDamage = 0,
-  });
 }

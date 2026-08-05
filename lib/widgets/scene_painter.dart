@@ -321,7 +321,7 @@ class ScenePainter extends CustomPainter {
     canvas.drawRect(Rect.fromCenter(center: Offset(w * 0.4, h * 0.45), width: 10, height: 35), candlePaint);
     canvas.drawRect(Rect.fromCenter(center: Offset(w * 0.6, h * 0.45), width: 10, height: 35), candlePaint);
 
-    final flamePaint = Paint()..color = const Color(0xFF00FF00).withOpacity(0.6 + animationValue * 0.3);
+    final flamePaint = Paint()..color = Color(0xFF00FF00).withOpacity(0.6 + animationValue * 0.3);
     final flameGlow = Paint()
       ..color = const Color(0x2200FF00)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 25);

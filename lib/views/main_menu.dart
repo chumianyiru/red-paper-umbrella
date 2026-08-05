@@ -82,9 +82,10 @@ class _MainMenuScreenState extends State<MainMenuScreen> with TickerProviderStat
     _audioService.playSfx('door_open');
     final player = Provider.of<Player>(context, listen: false);
     player.reset();
+    player.setChapter(1);
     Navigator.of(context).push(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => const GameScreen(),
+        pageBuilder: (context, animation, secondaryAnimation) => const GameScreen(chapterId: 1),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },
@@ -95,9 +96,10 @@ class _MainMenuScreenState extends State<MainMenuScreen> with TickerProviderStat
 
   void _continueGame() {
     _audioService.playSfx('door_open');
+    final player = Provider.of<Player>(context, listen: false);
     Navigator.of(context).push(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => const GameScreen(),
+        pageBuilder: (context, animation, secondaryAnimation) => GameScreen(chapterId: player.currentChapter),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },

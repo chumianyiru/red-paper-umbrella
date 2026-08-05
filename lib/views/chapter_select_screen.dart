@@ -224,11 +224,12 @@ class _ChapterSelectScreenState extends State<ChapterSelectScreen> {
   }
 
   void _startChapter(ChapterInfo chapter) {
+    final player = Provider.of<Player>(context, listen: false);
+    player.setChapter(chapter.number);
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (context) => GameScreen(
-          startSceneId: chapter.startScene,
-          startChapter: chapter.number,
+          chapterId: chapter.number,
         ),
       ),
     );
